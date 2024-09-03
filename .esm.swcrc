@@ -1,0 +1,33 @@
+{
+  "$schema": "https://swc.rs/schema.json",
+  "jsc": {
+    "keepClassNames": true,
+    "parser": {
+      "syntax": "typescript",
+      "tsx": true
+    },
+    "minify": {
+      "compress": true,
+      "mangle": {
+        "keep_classnames": true,
+        "keep_fnames": true
+      }
+    }
+  },
+  "env": {
+    "targets": "> 0.25%, not dead",
+    "mode": "entry",
+    "coreJs": "3.22",
+    "include": [
+            "transform-async-to-generator",
+            "transform-regenerator"
+        ]
+  },
+  "module": {
+    "type": "es6",
+    "strict": false,
+    "noInterop": false
+  },
+  "minify": true,
+  "sourceMaps": "inline"
+}
