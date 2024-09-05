@@ -13,6 +13,17 @@ export type DDate = {
   microsecond: number
 }
 
+export const defaultDDate: DDate = {
+  year: (new Date()).getUTCFullYear(),
+  month: 1,
+  day: 1,
+  hour: 0,
+  minute: 0,
+  second: 0,
+  millisecond: 0,
+  microsecond: 0,
+}
+
 /**
  * 
  * @param d the `Date` object to convert
@@ -51,7 +62,41 @@ export type DDateComparisonResult =
  * 
  * @remarks
  * 
- * If a `DDate` attribute is in an absolute, but yet undetermined, futur, use `DDATE_ABSOLUTE_FUTUR_VALUE` as value, which is equal to `Infinity`, so when comparing to any other `DDate`, this attribute is always superior to its counterpart.
+ * If a `DDate` attribute is in an absolute, but yet undetermined, futur,
+ * use `DDATE_ABSOLUTE_FUTUR_VALUE` as value, which is equal to `Infinity`,
+ * so when comparing to any other `DDate`, this attribute is always superior to
+ * its counterpart.
+ * 
+ * @example
+ * for a `DDate` that is at the very final day of January:
+ * ```
+ * const lastDayOfJanuary =
+ *   {
+ *     year: 2024,
+ *     month: 1,
+ *     day: DDATE_ABSOLUTE_FUTUR_VALUE,
+ *     hour: 0,
+ *     minute: 0,
+ *     second: 0,
+ *     millisecond: 0,
+ *     microsecond: 0,
+ *   }
+ * ```
+ * but you can also have a `DDate` that will **always** be the 
+ * very final moment of January:
+ * ```
+ * const lastMomentOfJanuary =
+ *   {
+ *     year: 2024,
+ *     month: 1,
+ *     day: DDATE_ABSOLUTE_FUTUR_VALUE,
+ *     hour: DDATE_ABSOLUTE_FUTUR_VALUE,
+ *     minute: DDATE_ABSOLUTE_FUTUR_VALUE,
+ *     second: DDATE_ABSOLUTE_FUTUR_VALUE,
+ *     millisecond: DDATE_ABSOLUTE_FUTUR_VALUE,
+ *     microsecond: DDATE_ABSOLUTE_FUTUR_VALUE,
+ *   }
+ * ```
  */
 export const DDATE_ABSOLUTE_FUTUR_VALUE : typeof Infinity = Infinity
 
@@ -86,4 +131,34 @@ export const compareDDate = (
       default:
         return sign(a.microsecond - b.microsecond)
     }
+}
+
+/**
+ * @example
+ * a DDateString looks like:
+ * `2024-01-30|9:30:45:135:756`
+ */
+export const DDATESTRING_REGEX = /^(?<year>[0-9]{4})(-(?<month>[0-9]{1,2})(-(?<day>[0-9]{1,2})(\|(?<hour>[0-9]{1,2})(:(?<minute>[0-9]{1,2})(:(?<second>[0-9]{1,2})(:(?<millisecond>[0-9]{3})(:(?<microsecond>[0-9]{3}))?)?)?)?)?)?)?$/i
+
+/**
+ * convert a DDateString to a DDate object
+ * @param DDateString that should looks like `2024-01-30|9:30:45:135:756`
+ * @returns 
+ */
+export const convertDDateStringToDDate = (
+  dateString: string,
+): DDate | never => {
+  if (!DDATESTRING_REGEX.exec(dateString))
+    throw new Error(`unable to parse "${dateString}" to DDate`)
+
+  return {
+    ...defaultDDate, 
+    ...Object.fromEntries(
+Object.entries(DDATESTRING_REGEX.exec(dateString).groups)
+        .map(
+            ([k,v]) => 
+              [k, parseInt(v as string, 10)]
+        )
+      )
+    } as DDate
 }

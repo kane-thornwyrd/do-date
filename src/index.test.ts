@@ -3,7 +3,7 @@ import chaiAsPromised from 'chai-as-promised'
 import * as chai from 'chai'
 import { faker } from '@faker-js/faker';
 
-import { convertDateToDDate, convertDDateToDate, DDate, compareDDate, DDATE_COMPARISON_VALUES } from '.'
+import { convertDateToDDate, convertDDateToDate, DDate, compareDDate, DDATE_COMPARISON_VALUES, convertDDateStringToDDate } from '.'
 
 chai.use(chaiAsPromised)
 
@@ -21,7 +21,7 @@ const aRandomDDateObject = (override? : Partial<DDate>): DDate => {
     minute: src.getUTCMinutes(),
     second: src.getUTCSeconds(),
     millisecond: src.getUTCMilliseconds(),
-    microsecond: faker.number.int(),
+    microsecond: faker.number.int({max:999}),
     ...override
   }
 }
@@ -85,5 +85,16 @@ describe('ways to compare DDates', () => {
     expect(compareDDate(pastDDate, futurDDate)).to.equal(DDATE_COMPARISON_VALUES.BEFORE)
     expect(compareDDate(pastDDate, pastDDate)).to.equal(DDATE_COMPARISON_VALUES.SAME)
     expect(compareDDate(futurDDate, pastDDate)).to.equal(DDATE_COMPARISON_VALUES.AFTER)
+  })
+})
+
+describe('ways to convert DDateString (string abiding the DDDate format) to DDate objects and vice-versa', () => {
+  it('has a function to convert a DDateString to a DDate', () => {
+    const t = aRandomDDateObject()
+
+    const stringForm = `${t.year}-${t.month}-${t.day}|${t.hour}:${t.minute}:${t.second}:${t.millisecond}:${t.microsecond}`
+
+    expect(convertDDateStringToDDate(stringForm)).to.deep.equal(t)
+
   })
 })

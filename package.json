@@ -1,7 +1,7 @@
 {
   "name": "do-date",
   "version": "0.0.1",
-  "description": "The minimalist date manipulation library",
+  "description": "The minimalist date storage and comparison library",
   "main": "lib/index.js",
   "module": "esm/index.js",
   "scripts": {
